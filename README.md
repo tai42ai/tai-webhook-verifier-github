@@ -1,4 +1,4 @@
-# tai-webhook-verifier-github
+# tai42-webhook-verifier-github
 
 [![CI](https://github.com/tai42ai/tai-webhook-verifier-github/actions/workflows/ci.yml/badge.svg)](https://github.com/tai42ai/tai-webhook-verifier-github/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
@@ -16,7 +16,7 @@ request body**, keyed by the shared secret, and sends it in the
 recomputes that HMAC over the raw bytes and compares it in constant time. It
 returns `None` on success and raises `WebhookVerificationError` on any failure.
 
-Its only tai-\* dependency is `tai-contract` (the interface it registers
+Its only tai-\* dependency is `tai42-contract` (the interface it registers
 through); the HMAC work is pure standard library (`hmac` / `hashlib`). It
 **never** imports the skeleton — the plugin is contract-facing.
 
@@ -36,21 +36,21 @@ documentation site covers the platform-level story:
 ## Install
 
 Requires **Python 3.13+**. Nothing is on PyPI yet, so install from source — clone
-this repo alongside your `tai-skeleton` checkout and add it as an editable
+this repo alongside your `tai42-skeleton` checkout and add it as an editable
 dependency of the environment that runs the server:
 
 ```bash
 git clone https://github.com/tai42ai/tai-webhook-verifier-github
 cd tai-skeleton   # or your own app checkout
-uv add --editable ../tai-webhook-verifier-github   # once published: uv add tai-webhook-verifier-github
+uv add --editable ../tai-webhook-verifier-github   # once published: uv add tai42-webhook-verifier-github
 ```
 
 ## How it loads — `lifecycle_modules`
 
 The platform loads this plugin through the manifest's **`lifecycle_modules`**
 field. That field is **import-only**: the host simply imports each listed module
-to run its registration side effect. Importing `tai_webhook_verifier_github`
-calls `tai_app.webhook_verifiers.register("github", GitHubWebhookVerifier())`,
+to run its registration side effect. Importing `tai42_webhook_verifier_github`
+calls `tai42_app.webhook_verifiers.register("github", GitHubWebhookVerifier())`,
 binding the `github` verifier on the app handle.
 
 ```jsonc
@@ -59,7 +59,7 @@ binding the `github` verifier on the app handle.
   // `lifecycle_modules` are imported WITHOUT going through the extension
   // registry's validation — only `extensions_modules` run that. So this entry
   // is a plain registration, not an extension.
-  "lifecycle_modules": ["tai_webhook_verifier_github"]
+  "lifecycle_modules": ["tai42_webhook_verifier_github"]
 }
 ```
 
@@ -95,7 +95,7 @@ becomes a silently-unauthenticated door.
    `application/json`, and a **Secret**. Store that same secret in the
    environment as `GITHUB_WEBHOOK_SECRET` on the platform.
 
-2. **List `tai_webhook_verifier_github` in the manifest** under
+2. **List `tai42_webhook_verifier_github` in the manifest** under
    `lifecycle_modules` (see above) so the `github` verifier is registered at
    boot.
 
@@ -163,7 +163,7 @@ uv run ruff format --check .
 uv run pyright
 ```
 
-`[tool.uv.sources]` resolves `tai-contract` from a sibling checkout for local
+`[tool.uv.sources]` resolves `tai42-contract` from a sibling checkout for local
 development; the published wheel floors it from the index.
 
 ## License

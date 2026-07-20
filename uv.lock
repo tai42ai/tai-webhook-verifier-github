@@ -295,23 +295,33 @@ wheels = [
 ]
 
 [[package]]
-name = "tai-contract"
+name = "tai42-contract"
 version = "0.1.0"
-source = { registry = "https://pypi.org/simple" }
+source = { editable = "../tai-contract" }
 dependencies = [
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d3/e1/1e9e48a61279abeda2112bc432c195b5070dc1da90c10b56538480bd3c39/tai_contract-0.1.0.tar.gz", hash = "sha256:aa7b15d4e9dd7cdac26eecb19b316374bab22061bae837d89b923567086fa01d", size = 87275, upload-time = "2026-07-20T11:08:09.127Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/91/bd/26507b61bb19ad56099030961edd87261049faa6c9e62fc9bba090ff1bd4/tai_contract-0.1.0-py3-none-any.whl", hash = "sha256:762d3765e2b49b041cc98737690d016a80b27a8534b363337565694695af7a2a", size = 110908, upload-time = "2026-07-20T11:08:07.932Z" },
+
+[package.metadata]
+requires-dist = [
+    { name = "fastmcp", marker = "extra == 'dev'", specifier = ">=3" },
+    { name = "langchain-core", marker = "extra == 'dev'", specifier = ">=1" },
+    { name = "mcp", marker = "extra == 'dev'", specifier = ">=1" },
+    { name = "pydantic", specifier = ">=2.12" },
+    { name = "pyright", marker = "extra == 'dev'", specifier = ">=1.1.389" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8" },
+    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=5" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.6" },
+    { name = "starlette", marker = "extra == 'dev'", specifier = ">=0.40" },
 ]
+provides-extras = ["dev"]
 
 [[package]]
-name = "tai-webhook-verifier-github"
+name = "tai42-webhook-verifier-github"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
-    { name = "tai-contract" },
+    { name = "tai42-contract" },
 ]
 
 [package.dev-dependencies]
@@ -324,7 +334,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "tai-contract", specifier = ">=0.1,<0.2" }]
+requires-dist = [{ name = "tai42-contract", editable = "../tai-contract" }]
 
 [package.metadata.requires-dev]
 dev = [

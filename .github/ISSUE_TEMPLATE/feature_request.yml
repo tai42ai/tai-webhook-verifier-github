@@ -1,18 +1,18 @@
 name: Feature request
-description: Propose an addition or change to tai-webhook-verifier-github
+description: Propose an addition or change to tai42-webhook-verifier-github
 labels: ["enhancement"]
 body:
   - type: textarea
     id: description
     attributes:
       label: Description
-      description: What should be added or changed, and what problem does it solve? Remember the plugin rule — tai-webhook-verifier-github depends on tai-contract only and never imports the skeleton.
+      description: What should be added or changed, and what problem does it solve? Remember the plugin rule — tai42-webhook-verifier-github depends on tai42-contract only and never imports the skeleton.
     validations:
       required: true
   - type: input
     id: version
     attributes:
-      label: tai-webhook-verifier-github version
+      label: tai42-webhook-verifier-github version
       description: The version you are using, if relevant.
       placeholder: "0.1.0"
     validations:

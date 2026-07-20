@@ -1,11 +1,11 @@
-# Contributing to tai-webhook-verifier-github
+# Contributing to tai42-webhook-verifier-github
 
-`tai-webhook-verifier-github` is a per-provider **webhook-signature verifier**
+`tai42-webhook-verifier-github` is a per-provider **webhook-signature verifier**
 plugin for the TAI ecosystem: it authenticates each inbound GitHub delivery by
 its `X-Hub-Signature-256` HMAC-SHA256 before the payload is parsed or dispatched.
-The hard rule (the plugin rule): **it depends on `tai-contract` only and never
-imports the skeleton.** It registers through the `tai_app` handle from
-`tai_contract.app` and is loaded by the host from the manifest's
+The hard rule (the plugin rule): **it depends on `tai42-contract` only and never
+imports the skeleton.** It registers through the `tai42_app` handle from
+`tai42_contract.app` and is loaded by the host from the manifest's
 `lifecycle_modules` field by dynamic import — there is no import edge to the
 skeleton in either direction.
 
@@ -17,7 +17,7 @@ skeleton in either direction.
 - **No skeleton import — ever.** The package is contract-facing; the ban is
   enforced by ruff (`flake8-tidy-imports`), so a stray import fails lint:
   ```bash
-  grep -rn "tai_skeleton" src/   # must be empty
+  grep -rn "tai42_skeleton" src/   # must be empty
   ```
 - **Fails closed.** A misconfigured secret (a missing `secret_env` key, a
   missing environment variable, or an empty secret value) raises loudly
@@ -35,9 +35,9 @@ skeleton in either direction.
 
 ## Layout
 
-- `src/tai_webhook_verifier_github/__init__.py` — the import-only registration
-  side effect: `tai_app.webhook_verifiers.register("github", GitHubWebhookVerifier())`.
-- `src/tai_webhook_verifier_github/verifier.py` — `GitHubWebhookVerifier` and its
+- `src/tai42_webhook_verifier_github/__init__.py` — the import-only registration
+  side effect: `tai42_app.webhook_verifiers.register("github", GitHubWebhookVerifier())`.
+- `src/tai42_webhook_verifier_github/verifier.py` — `GitHubWebhookVerifier` and its
   private header helper.
 - `tests/` mirrors `src/`.
 
@@ -51,7 +51,7 @@ uv run ruff format --check .
 uv run pyright
 ```
 
-`[tool.uv.sources]` pins `tai-contract` to a sibling `../tai-contract` editable
+`[tool.uv.sources]` pins `tai42-contract` to a sibling `../tai-contract` editable
 checkout so changes to the webhooks facet are picked up without a reinstall for
 local pytest. The published version floor in `[project].dependencies` is what the
 shipped wheel declares; this source override is not part of wheel metadata.

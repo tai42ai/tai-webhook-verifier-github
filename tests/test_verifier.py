@@ -18,9 +18,9 @@ from collections.abc import Callable, Mapping
 from typing import Any
 
 import pytest
-from tai_contract.webhooks import WebhookVerificationError
+from tai42_contract.webhooks import WebhookVerificationError
 
-from tai_webhook_verifier_github.verifier import GitHubWebhookVerifier
+from tai42_webhook_verifier_github.verifier import GitHubWebhookVerifier
 
 # GitHub's documented example: https://docs.github.com/webhooks (Validating
 # deliveries). Placeholder example secret only — never a real secret.
@@ -117,7 +117,7 @@ def test_non_hex_digest_fails() -> None:
 @pytest.mark.usefixtures("secret_env")
 def test_uses_constant_time_compare(monkeypatch: pytest.MonkeyPatch) -> None:
     """The final compare goes through ``hmac.compare_digest`` (constant-time)."""
-    import tai_webhook_verifier_github.verifier as verifier_module
+    import tai42_webhook_verifier_github.verifier as verifier_module
 
     calls: list[tuple[Any, Any]] = []
     real = hmac.compare_digest
@@ -161,6 +161,6 @@ def test_is_post_only() -> None:
 
 def test_registration(load_registrations: Callable[[str], Any]) -> None:
     """Importing the package registers the ``github`` verifier on the handle."""
-    app = load_registrations("tai_webhook_verifier_github")
+    app = load_registrations("tai42_webhook_verifier_github")
     assert set(app.webhook_verifiers.registered) == {"github"}
     assert isinstance(app.webhook_verifiers.get("github"), GitHubWebhookVerifier)

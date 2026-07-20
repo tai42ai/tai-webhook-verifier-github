@@ -3,7 +3,7 @@ requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "tai-webhook-verifier-github"
+name = "tai42-webhook-verifier-github"
 version = "0.1.0"
 description = "GitHub webhook-signature verifier plugin for the TAI ecosystem: a per-provider WebhookVerifier that checks each delivery's X-Hub-Signature-256 HMAC before the payload is dispatched."
 readme = "README.md"
@@ -25,10 +25,10 @@ classifiers = [
 ]
 dependencies = [
     # The pure interface contract this verifier registers through (the global
-    # tai_app handle and the WebhookVerifier / WebhookVerificationError types).
+    # tai42_app handle and the WebhookVerifier / WebhookVerificationError types).
     # The HMAC work is pure standard library (hmac / hashlib) — no other tai-*
     # dependency is needed.
-    "tai-contract>=0.1,<0.2",
+    "tai42-contract>=0.1,<0.2",
 ]
 
 [project.urls]
@@ -53,14 +53,20 @@ package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["tai_webhook_verifier_github*"]
+include = ["tai42_webhook_verifier_github*"]
 
 [tool.setuptools.package-data]
-tai_webhook_verifier_github = ["py.typed", "tai-plugin.yml"]
+tai42_webhook_verifier_github = ["py.typed", "tai-plugin.yml"]
 
 [tool.uv]
 cache-keys = [{ file = "pyproject.toml" }]
 
+
+# The version floors in [project] are the compatibility contract; these path
+# sources resolve the sibling checkouts while the packages are unpublished.
+# They are not part of wheel metadata.
+[tool.uv.sources]
+tai42-contract = { path = "../tai-contract", editable = true }
 [tool.ruff]
 src = ["src"]
 target-version = "py313"
@@ -70,7 +76,7 @@ line-length = 120
 select = ["E", "W", "F", "I", "UP", "B", "C4", "SIM", "PIE", "PT", "RUF", "TID"]
 
 [tool.ruff.lint.flake8-tidy-imports.banned-api]
-"tai_skeleton".msg = "tai-webhook-verifier-github is contract-facing: it never imports tai-skeleton."
+"tai42_skeleton".msg = "tai42-webhook-verifier-github is contract-facing: it never imports tai42-skeleton."
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -78,7 +84,7 @@ xfail_strict = true
 filterwarnings = ["error"]
 
 [tool.coverage.run]
-source = ["tai_webhook_verifier_github"]
+source = ["tai42_webhook_verifier_github"]
 
 [tool.coverage.report]
 fail_under = 95

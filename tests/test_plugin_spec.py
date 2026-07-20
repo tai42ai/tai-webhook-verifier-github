@@ -7,11 +7,11 @@ import tomllib
 from pathlib import Path
 
 import yaml
-from tai_contract.plugins import PluginSpec
+from tai42_contract.plugins import PluginSpec
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 _ROOT_SPEC = _REPO_ROOT / "tai-plugin.yml"
-_PACKAGED_SPEC = _REPO_ROOT / "src" / "tai_webhook_verifier_github" / "tai-plugin.yml"
+_PACKAGED_SPEC = _REPO_ROOT / "src" / "tai42_webhook_verifier_github" / "tai-plugin.yml"
 
 
 def _spec() -> PluginSpec:
@@ -37,7 +37,7 @@ def test_packaged_spec_is_declared_in_package_data():
     tool = tomllib.loads((_REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8"))["tool"]
     package_data = tool["setuptools"]["package-data"]
     owning = [pkg for pkg, patterns in package_data.items() if "tai-plugin.yml" in patterns]
-    assert owning == ["tai_webhook_verifier_github"]
+    assert owning == ["tai42_webhook_verifier_github"]
 
 
 def test_packaged_copy_is_identical_to_the_root_spec():

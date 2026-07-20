@@ -4,7 +4,7 @@ GitHub signs each webhook delivery with an HMAC-SHA256 over the exact raw reques
 body, keyed by the shared secret, and presents it in the ``X-Hub-Signature-256``
 header as ``"sha256=" + hexdigest``. :class:`GitHubWebhookVerifier` authenticates
 an inbound delivery against that scheme, returning ``None`` on success and raising
-:class:`~tai_contract.webhooks.WebhookVerificationError` on any verification
+:class:`~tai42_contract.webhooks.WebhookVerificationError` on any verification
 failure.
 
 The secret is never carried in the per-binding ``config`` — ``config`` names the
@@ -14,7 +14,7 @@ verification failure: it raises loudly (``KeyError`` / ``ValueError``) so the do
 fails CLOSED rather than silently treating every delivery as unauthenticated.
 
 Depends only on the standard library (``hmac`` / ``hashlib``) and the pure
-:mod:`tai_contract` interface it registers through.
+:mod:`tai42_contract` interface it registers through.
 """
 
 from __future__ import annotations
@@ -25,7 +25,7 @@ import os
 from collections.abc import Mapping
 from typing import Any
 
-from tai_contract.webhooks import WebhookVerificationError
+from tai42_contract.webhooks import WebhookVerificationError
 
 # GitHub's signature header and its fixed algorithm prefix. The hex digest of an
 # HMAC-SHA256 is always 64 characters, so a well-formed value is exactly
@@ -40,7 +40,7 @@ class GitHubWebhookVerifier:
 
     Registered under the name ``"github"`` on the app handle's
     ``webhook_verifiers`` facet. Satisfies the
-    :class:`~tai_contract.webhooks.WebhookVerifier` protocol.
+    :class:`~tai42_contract.webhooks.WebhookVerifier` protocol.
     """
 
     # The signature authenticates the raw body only, so a GET delivery would ride
@@ -51,7 +51,7 @@ class GitHubWebhookVerifier:
 
     async def verify(self, body: bytes, headers: Mapping[str, str], config: dict[str, Any]) -> None:
         """Verify a GitHub webhook, or raise
-        :class:`~tai_contract.webhooks.WebhookVerificationError`.
+        :class:`~tai42_contract.webhooks.WebhookVerificationError`.
 
         ``body`` is the EXACT raw request bytes — the HMAC is computed over these
         unchanged. ``headers`` are the request headers, looked up
