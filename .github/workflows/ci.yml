@@ -19,12 +19,12 @@ jobs:
       run:
         working-directory: tai-webhook-verifier-github
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: tai-webhook-verifier-github
       # The committed uv.lock resolves the tai42 packages from these sibling
       # checkouts ([tool.uv.sources] paths), so CI clones them next to this repo.
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: ${{ github.repository_owner }}/tai-contract
           path: tai-contract
