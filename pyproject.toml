@@ -1,0 +1,98 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tai-webhook-verifier-github"
+version = "0.1.0"
+description = "GitHub webhook-signature verifier plugin for the TAI ecosystem: a per-provider WebhookVerifier that checks each delivery's X-Hub-Signature-256 HMAC before the payload is dispatched."
+readme = "README.md"
+requires-python = ">=3.13"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+authors = [
+    { name = "tai42", email = "oss@tai42.ai" },
+]
+keywords = ["tai", "webhook", "verifier", "github", "hmac", "signature", "security"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: OS Independent",
+    "Topic :: Security",
+    "Typing :: Typed",
+]
+dependencies = [
+    # The pure interface contract this verifier registers through (the global
+    # tai_app handle and the WebhookVerifier / WebhookVerificationError types).
+    # The HMAC work is pure standard library (hmac / hashlib) — no other tai-*
+    # dependency is needed.
+    "tai-contract>=0.1,<0.2",
+]
+
+[project.urls]
+Homepage = "https://tai42.ai"
+Repository = "https://github.com/tai42ai/tai-webhook-verifier-github"
+Issues = "https://github.com/tai42ai/tai-webhook-verifier-github/issues"
+Changelog = "https://github.com/tai42ai/tai-webhook-verifier-github/blob/main/CHANGELOG.md"
+
+[dependency-groups]
+# Public dev/test tooling (installed by default with `uv sync`).
+dev = [
+    "pytest>=8",
+    "pytest-cov>=5",
+    "ruff>=0.6",
+    "pyright>=1.1.389",
+    # The plugin-spec test parses tai-plugin.yml.
+    "pyyaml>=6",
+]
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["tai_webhook_verifier_github*"]
+
+[tool.setuptools.package-data]
+tai_webhook_verifier_github = ["py.typed", "tai-plugin.yml"]
+
+[tool.uv]
+cache-keys = [{ file = "pyproject.toml" }]
+
+# Dev-only: resolve the sibling contract package from a local editable checkout so
+# changes to the (as-yet-unpublished) webhooks facet are picked up without a
+# reinstall for local pytest. The published version floor in [project].dependencies
+# is what the shipped wheel declares; this source override is not part of wheel
+# metadata. The skeleton is deliberately NOT a dependency — this plugin is
+# contract-facing and never imports it.
+[tool.uv.sources]
+tai-contract = { path = "../tai-contract", editable = true }
+
+[tool.ruff]
+src = ["src"]
+target-version = "py313"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "UP", "B", "C4", "SIM", "PIE", "PT", "RUF", "TID"]
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"tai_skeleton".msg = "tai-webhook-verifier-github is contract-facing: it never imports tai-skeleton."
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+xfail_strict = true
+filterwarnings = ["error"]
+
+[tool.coverage.run]
+source = ["tai_webhook_verifier_github"]
+
+[tool.coverage.report]
+fail_under = 95
+
+[tool.pyright]
+include = ["src", "tests"]
+pythonVersion = "3.13"
+typeCheckingMode = "basic"
