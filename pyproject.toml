@@ -61,15 +61,6 @@ tai_webhook_verifier_github = ["py.typed", "tai-plugin.yml"]
 [tool.uv]
 cache-keys = [{ file = "pyproject.toml" }]
 
-# Dev-only: resolve the sibling contract package from a local editable checkout so
-# changes to the (as-yet-unpublished) webhooks facet are picked up without a
-# reinstall for local pytest. The published version floor in [project].dependencies
-# is what the shipped wheel declares; this source override is not part of wheel
-# metadata. The skeleton is deliberately NOT a dependency — this plugin is
-# contract-facing and never imports it.
-[tool.uv.sources]
-tai-contract = { path = "../tai-contract", editable = true }
-
 [tool.ruff]
 src = ["src"]
 target-version = "py313"
