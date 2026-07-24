@@ -1,12 +1,8 @@
 """Tests for the GitHub webhook-signature verifier and its registration.
 
-The signature vector is GitHub's own documented example (body ``Hello, World!``,
-secret ``It's a Secret to Everybody``), pinned as a fixed deterministic value and
-also recomputed in-test so the suite is self-consistent. The secret only ever
-lives in an env var set through ``monkeypatch`` — never a committed fixture.
-
-``verify`` is async; each test drives it through ``asyncio.run``, keeping the
-suite free of an event-loop test plugin.
+The signature vector is GitHub's documented example, pinned and recomputed in-test.
+The secret only ever lives in a ``monkeypatch`` env var, never a committed fixture.
+``verify`` is async; each test drives it through ``asyncio.run``.
 """
 
 from __future__ import annotations
@@ -22,8 +18,7 @@ from tai42_contract.webhooks import WebhookVerificationError
 
 from tai42_webhook_verifier_github.verifier import GitHubWebhookVerifier
 
-# GitHub's documented example: https://docs.github.com/webhooks (Validating
-# deliveries). Placeholder example secret only — never a real secret.
+# GitHub's documented example vector (Validating deliveries). Example secret only.
 _SECRET_ENV = "GITHUB_WEBHOOK_SECRET"
 _EXAMPLE_SECRET = "It's a Secret to Everybody"  # GitHub's published example, not a real secret
 _EXAMPLE_BODY = b"Hello, World!"
@@ -105,10 +100,7 @@ def test_digest_mismatch_fails() -> None:
 
 @pytest.mark.usefixtures("secret_env")
 def test_non_hex_digest_fails() -> None:
-    # Right prefix and right length (64), but the digest is not hex. The
-    # ``bytes.fromhex`` parse rejects it as an ordinary verification failure with
-    # a distinct "not valid hex" message — a clean 401, never an unhandled parse
-    # error surfacing as a 500.
+    # Right prefix and length, but a non-hex digest — rejected as an ordinary failure.
     headers = {"X-Hub-Signature-256": "sha256=" + "z" * 64}
     with pytest.raises(WebhookVerificationError, match="not valid hex"):
         _verify(_EXAMPLE_BODY, headers, _config())
@@ -136,8 +128,7 @@ def test_uses_constant_time_compare(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_missing_secret_env_var_fails_closed(monkeypatch: pytest.MonkeyPatch) -> None:
-    """A missing env var raises loudly (not a WebhookVerificationError) — the door
-    fails CLOSED rather than treating the delivery as unauthenticated."""
+    """A missing env var raises loudly (not a WebhookVerificationError) — fails CLOSED."""
     monkeypatch.delenv(_SECRET_ENV, raising=False)
     headers = {"X-Hub-Signature-256": _EXAMPLE_SIGNATURE}
     with pytest.raises(KeyError):
@@ -145,9 +136,7 @@ def test_missing_secret_env_var_fails_closed(monkeypatch: pytest.MonkeyPatch) ->
 
 
 def test_empty_secret_env_var_fails_closed(monkeypatch: pytest.MonkeyPatch) -> None:
-    """An empty env var raises loudly (not a WebhookVerificationError) — an empty
-    secret would key a forgeable HMAC anyone can compute, so the door fails
-    CLOSED even when the signature matches the empty-keyed digest."""
+    """An empty env var raises loudly — an empty secret keys a forgeable HMAC, so fails CLOSED."""
     monkeypatch.setenv(_SECRET_ENV, "")
     headers = {"X-Hub-Signature-256": _sign(_EXAMPLE_BODY, "")}
     with pytest.raises(ValueError, match="set but empty"):

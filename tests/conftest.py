@@ -1,13 +1,8 @@
-"""Bind a capturing app to the ``tai42_app`` handle before any package import, and
-provide the registration-capture fixture.
+"""Bind a capturing app to the ``tai42_app`` handle before any package import.
 
-Importing ``tai42_webhook_verifier_github`` (including any of its submodules, which
-pull the package ``__init__`` first) runs the module-level
-``tai42_app.webhook_verifiers.register(...)`` call, mirroring how the host binds the
-app and then imports the module named by the manifest's ``lifecycle_modules``.
-Binding a capturing app here lets the suite import the package without an
-unbound-handle error; the ``load_registrations`` fixture rebinds a fresh capturing
-app so a test can assert exactly what the package registers.
+Importing the package runs its module-level ``webhook_verifiers.register(...)`` call,
+so a capturing app must be bound first or the import fails with an unbound handle.
+The ``load_registrations`` fixture rebinds a fresh capturing app per test.
 """
 
 from __future__ import annotations
@@ -23,15 +18,13 @@ from tai42_contract.webhooks import WebhookVerifier
 
 
 class _CaptureVerifiers:
-    """Records every verifier registered through
-    ``tai42_app.webhook_verifiers.register``."""
+    """Records every verifier registered through ``webhook_verifiers.register``."""
 
     def __init__(self) -> None:
         self.registered: dict[str, WebhookVerifier] = {}
 
     def register(self, name: str, verifier: WebhookVerifier) -> None:
-        # A real app raises on a duplicate name; the capture mirrors that so a
-        # double-registration bug surfaces in tests rather than being masked.
+        # Mirror a real app's duplicate-name raise so a double-registration bug surfaces.
         if name in self.registered:
             raise ValueError(f"verifier {name!r} is already registered")
         self.registered[name] = verifier
@@ -45,17 +38,14 @@ class _CaptureApp:
         self.webhook_verifiers = _CaptureVerifiers()
 
 
-# Bind at import time so the first import of the package (its module-level
-# register call) has an app to register against.
+# Bind at import time so the package's module-level register call has an app.
 tai42_app.bind(_CaptureApp())
 
 
 @pytest.fixture
 def load_registrations() -> Iterator[Any]:
-    """Return a loader that (re)imports the package under a fresh capturing app
-    and hands back the app so the test can read ``app.webhook_verifiers.registered``.
-
-    The previously bound app is restored afterwards so other tests are unaffected.
+    """Return a loader that (re)imports the package under a fresh capturing app and
+    returns it. Restores the previously bound app afterwards.
     """
     previous = cast("Any", tai42_app)._impl
 
