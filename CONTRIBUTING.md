@@ -1,0 +1,82 @@
+# Contributing to tai42-webhook-verifier-github
+
+`tai42-webhook-verifier-github` is a per-provider **webhook-signature verifier**
+plugin for the TAI ecosystem: it authenticates each inbound GitHub delivery by
+its `X-Hub-Signature-256` HMAC-SHA256 before the payload is parsed or dispatched.
+The hard rule (the plugin rule): **it depends on `tai42-contract` only and never
+imports the skeleton.** It registers through the `tai42_app` handle from
+`tai42_contract.app` and is loaded by the host from the manifest's
+`lifecycle_modules` field by dynamic import — there is no import edge to the
+skeleton in either direction.
+
+> A webhook door binds a named verifier to a topic; this plugin supplies the
+> `github` verifier.
+
+## Ground rules
+
+- **No skeleton import — ever.** The package is contract-facing; the ban is
+  enforced by ruff (`flake8-tidy-imports`), so a stray import fails lint:
+  ```bash
+  grep -rn "tai42_skeleton" src/   # must be empty
+  ```
+- **Fails closed.** A misconfigured secret (a missing `secret_env` key, a
+  missing environment variable, or an empty secret value) raises loudly
+  (`KeyError` / `ValueError`) rather than being treated as an ordinary signature
+  failure — a misconfigured door is never a silently-unauthenticated one.
+- **Loud errors.** No swallowed exceptions, silent fallbacks, or silent
+  truncation. A missing header, a malformed signature, or a digest mismatch
+  raises `WebhookVerificationError`; an operator misconfiguration raises.
+- **The secret never leaves the environment.** It is read from `os.environ` at
+  verify time and never carried in the per-binding `config`, a fixture, or a
+  test. The only secret in the tree is GitHub's published example placeholder.
+- **Constant-time compare.** The final digest check uses `hmac.compare_digest`;
+  never replace it with a plain `==`.
+- **Typed package** (`py.typed`). Pyright runs clean.
+
+## Layout
+
+- `src/tai42_webhook_verifier_github/__init__.py` — the import-only registration
+  side effect: `tai42_app.webhook_verifiers.register("github", GitHubWebhookVerifier())`.
+- `src/tai42_webhook_verifier_github/verifier.py` — `GitHubWebhookVerifier` and its
+  private header helper.
+- `tests/` mirrors `src/`.
+
+## Naming
+
+PyPI is a flat namespace with no owner in the path, so distributions carry the
+`tai42-` prefix. GitHub repositories keep their `tai-` names, because the
+`tai42ai` organisation already namespaces them. Import packages follow the
+distribution.
+
+| Surface | Form |
+| --- | --- |
+| Distribution — PyPI, `pip install`, dependency pins | `tai42-<name>` |
+| Import package | `tai42_<name>` |
+| GitHub repository | `tai-<name>` |
+
+So a dependency is declared as `tai42-<name>` while its repository is named
+`tai-<name>`, and both spellings are correct in their own context.
+
+Some surfaces are deliberately neither, and must not be renamed: the `tai` CLI
+command (`tai42` is an alias), the Prometheus metric namespace (`tai_tool_*`),
+`TAI_*` environment variables, and the `tai-plugin.yml` descriptor filename.
+
+## Dev
+
+```bash
+uv venv --python 3.13
+uv pip install --no-sources --group dev --editable .
+uv run --no-sync pytest --cov --cov-report=term-missing
+uv run --no-sync ruff check .
+uv run --no-sync ruff format --check .
+uv run --no-sync pyright
+```
+
+`make dev` installs the sibling `tai-contract` repo as an editable install for local cross-repo development.
+
+Before any commit, run a secret scan over `src/` and `tests/` (e.g.
+`detect-secrets scan`).
+
+## License
+
+By contributing you agree your contributions are licensed under Apache-2.0.
