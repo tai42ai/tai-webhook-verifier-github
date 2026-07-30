@@ -5,7 +5,11 @@
   "packages": {
     ".": {
       "skip-changelog": true,
-      "package-name": "tai42-webhook-verifier-github"
+      "package-name": "tai42-webhook-verifier-github",
+      "extra-files": [
+        "tai-plugin.yml",
+        "src/tai42_webhook_verifier_github/tai-plugin.yml"
+      ]
     }
   }
 }
