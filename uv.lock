@@ -297,24 +297,14 @@ wheels = [
 [[package]]
 name = "tai42-contract"
 version = "0.2.0"
-source = { editable = "../tai-contract" }
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pydantic" },
 ]
-
-[package.metadata]
-requires-dist = [
-    { name = "fastmcp", marker = "extra == 'dev'", specifier = ">=3" },
-    { name = "langchain-core", marker = "extra == 'dev'", specifier = ">=1" },
-    { name = "mcp", marker = "extra == 'dev'", specifier = ">=1" },
-    { name = "pydantic", specifier = ">=2.12" },
-    { name = "pyright", marker = "extra == 'dev'", specifier = ">=1.1.389" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8" },
-    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=5" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.6" },
-    { name = "starlette", marker = "extra == 'dev'", specifier = ">=0.40" },
+sdist = { url = "https://files.pythonhosted.org/packages/32/6f/dcafdef19c7455faaa3641ba5a2f89158a2cd60290619566408dfc593cd1/tai42_contract-0.2.0.tar.gz", hash = "sha256:f9a6ff932dcde934b62959168eee5265731d9f7217cb239f4351bfc7179d7b33", size = 95490, upload-time = "2026-07-29T09:12:26.487Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/74/3a/db132dd952ed90bb29e4eb98b140f492c51a66dbd9c583c912e4d217c316/tai42_contract-0.2.0-py3-none-any.whl", hash = "sha256:1b3dd987b4fce4faf0f8f94cc550202066aabb6ef8701214cecd01095856770a", size = 120749, upload-time = "2026-07-29T09:12:25.467Z" },
 ]
-provides-extras = ["dev"]
 
 [[package]]
 name = "tai42-webhook-verifier-github"
@@ -334,7 +324,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "tai42-contract", editable = "../tai-contract" }]
+requires-dist = [{ name = "tai42-contract", specifier = ">=0.2,<0.3" }]
 
 [package.metadata.requires-dev]
 dev = [
